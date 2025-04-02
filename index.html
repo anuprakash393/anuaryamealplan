@@ -4,52 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Daily Meal Plan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-color: #4a90e2;
+            --secondary-color: #f8f9fa;
+            --text-color: #2c3e50;
+            --border-color: #e9ecef;
+            --success-color: #28a745;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Poppins', sans-serif;
             line-height: 1.6;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
         }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
         h1 {
-            color: #333;
+            color: var(--primary-color);
             text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 1.5em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
         }
+
         table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 15px;
             margin-bottom: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+
         th {
-            background-color: #f2f2f2;
-            font-weight: bold;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 15px;
+            text-align: left;
+            border-radius: 5px;
         }
+
+        td {
+            background-color: white;
+            padding: 20px 15px;
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr td:first-child {
+            border-left: 1px solid var(--border-color);
+            border-top-left-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+
+        tr td:last-child {
+            border-right: 1px solid var(--border-color);
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+        }
+
         .checkbox {
-            margin-right: 10px;
+            appearance: none;
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--primary-color);
+            border-radius: 3px;
+            margin-right: 15px;
+            cursor: pointer;
+            position: relative;
+            vertical-align: middle;
+            transition: background 0.3s;
         }
+
+        .checkbox:checked {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+
+        .checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: white;
+            font-size: 14px;
+            left: 4px;
+            top: -1px;
+        }
+
         .completed {
             text-decoration: line-through;
-            color: #888;
+            color: #6c757d;
+        }
+
+        tr:hover td {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #6c757d;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            table {
+                font-size: 0.9em;
+            }
+
+            td, th {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 2em;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Anu Arya's Daily Meal Plan</h1>
-    <table id="mealPlanTable">
-        <tr>
-            <th>Meal Time</th>
-            <th>What to Eat</th>
-            <th>Supplements</th>
-        </tr>
-    </table>
+    <div class="container">
+        <h1>Anu Arya's Daily Meal Plan</h1>
+        <table id="mealPlanTable">
+            <tr>
+                <th>Meal Time</th>
+                <th>What to Eat</th>
+                <th>Supplements</th>
+            </tr>
+        </table>
+        <button id="clearAll" class="clear-button">Clear All</button>
+        <div class="footer">
+            <p>Remember to consult with a healthcare professional before making significant changes to your diet or supplement regimen.</p>
+            <p>Last updated: <span id="lastUpdated"></span></p>
+        </div>
+    </div>
 
     <script>
         const mealPlanData = [
@@ -64,22 +168,57 @@
 
         const table = document.getElementById('mealPlanTable');
 
+        function saveCheckboxStates() {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            const states = Array.from(checkboxes).map(cb => cb.checked);
+            localStorage.setItem('mealPlanCheckboxes', JSON.stringify(states));
+        }
+
+        function loadCheckboxStates() {
+            const savedStates = localStorage.getItem('mealPlanCheckboxes');
+            if (savedStates) {
+                const states = JSON.parse(savedStates);
+                const checkboxes = document.querySelectorAll('.checkbox');
+                checkboxes.forEach((cb, index) => {
+                    cb.checked = states[index];
+                    cb.parentElement.classList.toggle('completed', states[index]);
+                });
+            }
+        }
+
         mealPlanData.forEach((row, index) => {
             const tr = document.createElement('tr');
             row.forEach((cell, cellIndex) => {
                 const td = document.createElement('td');
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.className = 'checkbox';
-                checkbox.addEventListener('change', function() {
-                    td.classList.toggle('completed');
-                });
-                td.appendChild(checkbox);
+                if (cellIndex === 0) {
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'checkbox';
+                    checkbox.addEventListener('change', function() {
+                        td.classList.toggle('completed');
+                        saveCheckboxStates();
+                    });
+                    td.appendChild(checkbox);
+                }
                 td.appendChild(document.createTextNode(cell));
                 tr.appendChild(td);
             });
             table.appendChild(tr);
         });
+
+        document.getElementById('clearAll').addEventListener('click', function() {
+            const checkboxes = document.querySelectorAll('.checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                cb.parentElement.classList.remove('completed');
+            });
+            saveCheckboxStates();
+        });
+
+        loadCheckboxStates();
+
+        const lastUpdated = new Date().toLocaleString();
+        document.getElementById('lastUpdated').textContent = lastUpdated;
     </script>
 </body>
 </html>
