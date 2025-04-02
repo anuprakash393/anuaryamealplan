@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Meal Plan</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .checkbox {
+            margin-right: 10px;
+        }
+        .completed {
+            text-decoration: line-through;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <h1>Anu Arya's Daily Meal Plan</h1>
+    <table id="mealPlanTable">
+        <tr>
+            <th>Meal Time</th>
+            <th>What to Eat</th>
+            <th>Supplements</th>
+        </tr>
+    </table>
+
+    <script>
+        const mealPlanData = [
+            ["Morning (Pre-Workout)", "Optional: Small carb (1/2 banana or rice cake)", "Creatine (5g)"],
+            ["Breakfast", "Protein + Fat: Eggs with avocado toast or protein smoothie with chia seeds", "B100 Complex + Vitamin D + Vitamin C"],
+            ["Mid-Morning", "Optional: Green Tea + ACV pill", "Green Tea + ACV (if needed)"],
+            ["Lunch", "Salmon or lean protein + quinoa + greens (Add Rhodiola/Theanine if needed)", "Omega-3 from food, or Rhodiola/Theanine"],
+            ["Afternoon", "Small protein/fat snack: Apple + almond butter or yogurt with seeds", "Magnesium Complex (500mg)"],
+            ["Dinner", "Lean protein + steamed or roasted veggies", "None"],
+            ["Evening (Optional)", "Genestra Cal-Mag Liquid before bed", "Cal-Mag Liquid"]
+        ];
+
+        const table = document.getElementById('mealPlanTable');
+
+        mealPlanData.forEach((row, index) => {
+            const tr = document.createElement('tr');
+            row.forEach((cell, cellIndex) => {
+                const td = document.createElement('td');
+                const checkbox = document.createElement('input');
+                checkbox.type = 'checkbox';
+                checkbox.className = 'checkbox';
+                checkbox.addEventListener('change', function() {
+                    td.classList.toggle('completed');
+                });
+                td.appendChild(checkbox);
+                td.appendChild(document.createTextNode(cell));
+                tr.appendChild(td);
+            });
+            table.appendChild(tr);
+        });
+    </script>
+</body>
+</html>
