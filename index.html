@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Meal Plan</title>
+    <title>Anu Arya's Daily Meal Plan</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -13,6 +13,22 @@
             --text-color: #2c3e50;
             --border-color: #e9ecef;
             --success-color: #28a745;
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 30px auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
         }
 
         body {
@@ -133,6 +149,23 @@
             margin-bottom: 20px;
         }
 
+        #toggleVideo {
+            display: block;
+            margin: -20px auto 20px;
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: background-color 0.3s;
+        }
+
+        #toggleVideo:hover {
+            background-color: #357abd;
+        }
+
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -153,6 +186,13 @@
     </style>
 </head>
 <body>
+    <div class="video-container">
+        <video autoplay loop muted playsinline>
+            <source src="https://github.com/anuprakash393/anuaryamealplan/raw/e120bdb4677c0baf158a0cb61b40a9de4c30618f/IMG_4990.mov" type="video/quicktime">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    <button id="toggleVideo">Toggle Video</button>
     <div class="container">
         <h1>Anu Arya's Daily Meal Plan</h1>
         <table id="mealPlanTable">
@@ -298,6 +338,23 @@
 
         // Initial chart update
         updateProgressChart();
+
+        // Video toggle functionality
+        const video = document.querySelector('video');
+        const toggleButton = document.getElementById('toggleVideo');
+        
+        toggleButton.addEventListener('click', () => {
+            if (video.paused) {
+                video.play();
+                toggleButton.textContent = 'Pause Video';
+            } else {
+                video.pause();
+                toggleButton.textContent = 'Play Video';
+            }
+        });
+
+        // Set initial button text
+        toggleButton.textContent = video.paused ? 'Play Video' : 'Pause Video';
     </script>
 </body>
 </html>
