@@ -194,6 +194,36 @@
             margin-bottom: 20px;
         }
 
+        #progressMessage {
+            text-align: center;
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 600px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        #progressMessage.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #progressMessage.milestone {
+            background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
         #toggleVideo {
             display: block;
             margin: -20px auto 20px;
@@ -246,6 +276,7 @@
     </div>
     <div class="container">
         <h1>Anu Arya's Daily Meal Plan</h1>
+        <div id="progressMessage"></div>
         <table id="mealPlanTable">
             <tr>
                 <th>Meal Time</th>
@@ -277,6 +308,7 @@
         ];
 
         const table = document.getElementById('mealPlanTable');
+        const progressMessage = document.getElementById('progressMessage');
 
         function saveCheckboxStates() {
             const checkboxes = document.querySelectorAll('.checkbox');
@@ -296,6 +328,37 @@
             }
         }
 
+        function updateMotivationalMessage(progress) {
+            const messages = [
+                "Great start! Keep up the momentum!",
+                "You're making progress! Every step counts!",
+                "Halfway there! You're doing amazing!",
+                "Almost done! You're crushing it!",
+                "Incredible job! You've completed your meal plan!"
+            ];
+            const milestones = [20, 40, 60, 80, 100];
+            
+            let message = "";
+            for (let i = milestones.length - 1; i >= 0; i--) {
+                if (progress >= milestones[i]) {
+                    message = messages[i];
+                    break;
+                }
+            }
+
+            progressMessage.textContent = message;
+            progressMessage.classList.add('show');
+            if (progress === 100) {
+                progressMessage.classList.add('milestone');
+            } else {
+                progressMessage.classList.remove('milestone');
+            }
+
+            setTimeout(() => {
+                progressMessage.classList.remove('show');
+            }, 5000);
+        }
+
         mealPlanData.forEach((row, index) => {
             const tr = document.createElement('tr');
             row.forEach((cell, cellIndex) => {
@@ -307,6 +370,7 @@
                     checkbox.addEventListener('change', function() {
                         td.classList.toggle('completed');
                         saveCheckboxStates();
+                        saveWeeklyProgress();
                     });
                     td.appendChild(checkbox);
                 }
@@ -323,6 +387,7 @@
                 cb.parentElement.classList.remove('completed');
             });
             saveCheckboxStates();
+            saveWeeklyProgress();
         });
 
         loadCheckboxStates();
@@ -330,7 +395,6 @@
         const lastUpdated = new Date().toLocaleString();
         document.getElementById('lastUpdated').textContent = lastUpdated;
 
-        // Weekly report functionality
         function saveWeeklyProgress() {
             const checkboxes = document.querySelectorAll('.checkbox');
             const totalChecked = Array.from(checkboxes).filter(cb => cb.checked).length;
@@ -346,11 +410,11 @@
                 weeklyProgress.push({ date: today, progress: progress });
             }
 
-            // Keep only the last 7 days
             weeklyProgress = weeklyProgress.slice(-7);
 
             localStorage.setItem('weeklyProgress', JSON.stringify(weeklyProgress));
             updateProgressChart();
+            updateMotivationalMessage(progress);
         }
 
         function updateProgressChart() {
@@ -380,32 +444,7 @@
             });
         }
 
-        // Update progress when checkboxes change
-        document.querySelectorAll('.checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                saveWeeklyProgress();
-            });
-        });
-
-        // Initial chart update
-        updateProgressChart();
-
-        // Video toggle functionality
-        const video = document.querySelector('video');
-        const toggleButton = document.getElementById('toggleVideo');
-        
-        toggleButton.addEventListener('click', () => {
-            if (video.paused) {
-                video.play();
-                toggleButton.textContent = 'Pause Video';
-            } else {
-                video.pause();
-                toggleButton.textContent = 'Play Video';
-            }
-        });
-
-        // Set initial button text
-        toggleButton.textContent = video.paused ? 'Play Video' : 'Pause Video';
+        saveWeeklyProgress();
     </script>
 </body> 
 </html>
